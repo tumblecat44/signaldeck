@@ -199,8 +199,9 @@ export function applyEntitlement(
   }
   const limited = queue.slice(0, freeLimit);
   const drafts: Record<string, ReplyDraft | null> = {};
-  for (const s of limited) {
-    drafts[s.id] = null; // free users see score, not full draft
-  }
+  // Tease: first free item gets a draft so value is obvious; rest locked
+  limited.forEach((s, i) => {
+    drafts[s.id] = i === 0 ? draftReply(s) : null;
+  });
   return { queue: limited, drafts, locked: queue.length > freeLimit };
 }

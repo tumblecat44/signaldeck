@@ -78,7 +78,10 @@ describe("draftReply + applyEntitlement", () => {
     const ranked = rankQueue(raw, ["tool"], 10);
     const free = applyEntitlement(ranked, false, 3);
     expect(free.queue.length).toBeLessThanOrEqual(3);
-    expect(Object.values(free.drafts).every((d) => d === null)).toBe(true);
+    // First free item is a draft teaser; remaining free slots stay locked
+    const freeDrafts = free.queue.map((s) => free.drafts[s.id]);
+    expect(freeDrafts[0] && freeDrafts[0].body.length > 10).toBe(true);
+    expect(freeDrafts.slice(1).every((d) => d === null)).toBe(true);
     expect(free.locked).toBe(ranked.length > 3);
 
     const paid = applyEntitlement(ranked, true, 3);

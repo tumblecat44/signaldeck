@@ -27,7 +27,9 @@ describe("queue flow (HN + score + gate)", () => {
     const ranked = rankQueue(raw, ["SaaS", "looking for"], 10);
     const free = applyEntitlement(ranked, false, 3);
     expect(free.queue.length).toBeLessThanOrEqual(3);
-    expect(Object.values(free.drafts).every((d) => d === null)).toBe(true);
+    if (free.queue.length > 0) {
+      expect(free.drafts[free.queue[0].id]?.body.length).toBeGreaterThan(10);
+    }
 
     const paid = applyEntitlement(ranked, true, 3);
     if (paid.queue.length > 0) {

@@ -131,10 +131,36 @@ export default function AppPage() {
         <a
           href={checkoutHref}
           className="btn btn-ghost w-full no-underline"
-          onClick={(e) => {
+          onClick={async (e) => {
             if (!email.trim()) {
               e.preventDefault();
               setError("Enter your email before checkout so we can unlock Pro.");
+              return;
+            }
+            // Probe checkout config so we surface setup errors early
+            e.preventDefault();
+            try {
+              const res = await fetch(checkoutHref, { redirect: "manual" });
+              if (res.status >= 300 && res.status < 400) {
+                const loc = res.headers.get("Location");
+                if (loc) {
+                  window.location.href = loc;
+                  return;
+                }
+              }
+              if (res.ok) {
+                window.location.href = checkoutHref;
+                return;
+              }
+              const j = (await res.json().catch(() => null)) as {
+                error?: string;
+              } | null;
+              setError(
+                j?.error ||
+                  "Checkout not ready (Polar env missing on server). See docs/POLAR_SETUP.md",
+              );
+            } catch {
+              window.location.href = checkoutHref;
             }
           }}
         >
