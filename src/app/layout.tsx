@@ -24,6 +24,9 @@ export default function RootLayout({
               <a href="/#pricing" className="muted no-underline hover:text-[var(--accent)]">
                 Pricing
               </a>
+              <a href="/faq" className="muted no-underline hover:text-[var(--accent)]">
+                FAQ
+              </a>
               <a href="/app" className="btn btn-ghost !py-2 !text-sm no-underline">
                 Open app
               </a>
